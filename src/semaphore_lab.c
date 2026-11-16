@@ -12,19 +12,22 @@ void *worker(void *arg) {
     char token = *(char *)arg;
     int index;
 
-    fprintf(stderr, "TODO: semaphore critical section not implemented\n");
-    (void)token;
-    (void)index;
-    return NULL;
-
     for (index = 0; index < 10; index++) {
-        /* TODO: enter the critical section with sem_wait(). */
+        if (sem_wait(&output_lock) == -1) {
+            perror("sem_wait");
+            exit(EXIT_FAILURE);
+        }
+
         printf("[%c", token);
         fflush(stdout);
         usleep(1000);
         printf("]");
         fflush(stdout);
-        /* TODO: leave the critical section with sem_post(). */
+
+        if (sem_post(&output_lock) == -1) {
+            perror("sem_post");
+            exit(EXIT_FAILURE);
+        }
     }
 
     return NULL;
